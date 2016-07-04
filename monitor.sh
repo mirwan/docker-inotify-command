@@ -197,7 +197,7 @@ echo "$(ts) Waiting for changes to $WATCH_DIR..."
 EXCLUDE_PATTERN_STR=""
 if [ -n "${EXCLUDE_PATTERN}" ];
 then
-	EXCLUDE_PATTERN_STR=" --exclude=${EXCLUDE_PATTERN}"
+	EXCLUDE_PATTERN_STR=" --exclude ${EXCLUDE_PATTERN}"
 fi
 inotifywait${EXCLUDE_PATTERN_STR} -r -m -q --format 'EVENT=%e WATCHED=%w FILE=%f' $WATCH_DIR >$pipe &
 
