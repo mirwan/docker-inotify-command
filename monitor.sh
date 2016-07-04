@@ -197,7 +197,7 @@ then
 	EXCLUDE_PATTERN_STR=" --exclude ${EXCLUDE_PATTERN}"
 fi
 last_run_time=0
-inotifywait${EXCLUDE_PATTERN_STR} -r -m -q --format 'EVENT=%e WATCHED=%w FILE=%f' $WATCH_DIR | while true
+exec inotifywait${EXCLUDE_PATTERN_STR} -r -m -q --format 'EVENT=%e WATCHED=%w FILE=%f' $WATCH_DIR | while true
 do
   if read RECORD
   then
