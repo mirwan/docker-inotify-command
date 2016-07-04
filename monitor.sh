@@ -190,20 +190,14 @@ SETTLE_DURATION=$(to_seconds $SETTLE_DURATION)
 MAX_WAIT_TIME=$(to_seconds $MAX_WAIT_TIME)
 MIN_PERIOD=$(to_seconds $MIN_PERIOD)
 
-pipe=$(mktemp -u)
-mkfifo $pipe
-
 echo "$(ts) Waiting for changes to $WATCH_DIR..."
 EXCLUDE_PATTERN_STR=""
 if [ -n "${EXCLUDE_PATTERN}" ];
 then
 	EXCLUDE_PATTERN_STR=" --exclude ${EXCLUDE_PATTERN}"
 fi
-inotifywait${EXCLUDE_PATTERN_STR} -r -m -q --format 'EVENT=%e WATCHED=%w FILE=%f' $WATCH_DIR >$pipe &
-
 last_run_time=0
-
-while true
+inotifywait${EXCLUDE_PATTERN_STR} -r -m -q --format 'EVENT=%e WATCHED=%w FILE=%f' $WATCH_DIR | while true
 do
   if read RECORD
   then
@@ -233,4 +227,4 @@ do
 
     wait_for_command_to_complete $PID
   fi
-done <$pipe
+done
