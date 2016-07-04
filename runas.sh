@@ -39,12 +39,21 @@ function create_user {
   local USER_ID=$1
   local GROUP_ID=$2
 
-  USER="user_${USER_ID}_$GROUP_ID"
-  GROUP="group_${USER_ID}_$GROUP_ID"
+  USER="user_${USER_ID}_${GROUP_ID}"
+  GROUP="group_${USER_ID}_${GROUP_ID}"
 
-  if id -u $USER >/dev/null 2>&1
+  EXISTANT_USER=$(getent passwd ${USER_ID} | cut -d: -f1)
+  if [ -n "${EXISTANT_USER}" ];
   then
-    echo "$(ts) User \"$USER\" already exists. Skipping creation of user and group..."
+    if [ "${EXISTANT_USER}" != "${USER}" ];
+    then
+      echo "$(ts) A user other than ${USER} already exists with the same UID. Skipping creation of user and group..."
+      
+    else
+      echo "$(ts) User \"$USER\" already exists. Skipping creation of user and group..."
+    fi
+    USER=${EXISTANT_USER}
+    unset GROUP
     return
   fi
 
@@ -69,4 +78,4 @@ create_user $USER_ID $GROUP_ID
 
 echo "$(ts) Running command as user \"$USER\"..."
 umask $UMASK
-exec /sbin/setuser $USER "$@"
+exec /usr/bin/setuidgid $USER "$@"
